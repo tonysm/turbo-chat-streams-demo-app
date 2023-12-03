@@ -22,12 +22,16 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('chats.create')" :active="request()->routeIs('chats.*')">
+                        {{ __('Chats') }}
+                    </x-nav-link>
                 </div>
             </div>
 
             <div class="flex items-center space-x-2">
                 <!-- Settings Dropdown -->
-                <a href="{{ route('profile.index') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                <a href="{{ route('profile.show') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                     <div>{{ Auth::user()->name }}</div>
                 </a>
 
@@ -49,6 +53,10 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('chats.create')" :active="request()->routeIs('chats.*')">
+                {{ __('Chats') }}
             </x-responsive-nav-link>
         </div>
     </div>

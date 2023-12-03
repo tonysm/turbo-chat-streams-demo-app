@@ -17,6 +17,8 @@
         <!-- Scripts -->
         <x-importmap-tags />
         <link rel="stylesheet" href="{{ tailwindcss('css/app.css') }}" />
+
+        {{ $head ?? '' }}
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
