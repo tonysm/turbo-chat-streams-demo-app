@@ -67,7 +67,7 @@ Route::middleware('auth')->group(function () {
 
         if (request()->wantsTurboStreamEventStream()) {
             return response()->turboStreamsEventStream(function ($send) use ($bot, $chat, $message, $reply) {
-                $send(turbo_stream([
+                $send((string) turbo_stream([
                     turbo_stream()
                         ->action('append')
                         ->target(dom_id($chat, 'messages'))
@@ -83,9 +83,7 @@ Route::middleware('auth')->group(function () {
                 ]));
 
                 $bot->reply($reply, function ($reply) use ($send) {
-                    if (connection_aborted()) return false;
-
-                    $send(turbo_stream()
+                    $send((string) turbo_stream()
                         ->action('replace')
                         ->target(dom_id($reply))
                         ->view('messages.partials.message', ['message' => $reply]));

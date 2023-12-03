@@ -24,18 +24,18 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Request::macro('wantsTurboStreamEventStream', function () {
-            return str_contains($this->header('Accept', ''), 'text/event-stream');
+            return str_contains($this->header('Accept', ''), 'text/vnd.turbo-stream-chunked.html');
         });
 
         Response::macro('turboStreamsEventStream', function ($callback) {
-            $send = function (MultiplePendingTurboStreamResponse|PendingTurboStreamResponse $streams) {
-                echo json_encode([
-                    'stream' => true,
-                    'body' => (string) $streams,
-                    'endStream' => true,
-                ]);
+            $send = function (string $chunk) {
+                if (connection_aborted()) return;
 
-                echo PHP_EOL;
+                // Making sure this is all in one line...
+                $chunk = json_encode($chunk);
+
+                echo dechex(strlen($chunk)) . PHP_EOL;
+                echo $chunk . PHP_EOL;
 
                 if (ob_get_level() > 0) {
                     ob_flush();
@@ -45,15 +45,19 @@ class AppServiceProvider extends ServiceProvider
             };
 
             $response = response()->stream(null, 200, [
-                'Content-Type' => 'text/event-stream',
+                'Content-Type' => 'text/vnd.turbo-stream-chunked.html',
+                'Transfer-Encoding' => 'chunked',
                 'X-Accel-Buffering' => 'no',
-                'Cach-Control' => 'no-cache',
-                'X-Turbo-Stream' => 'yes',
+                'Cache-Control' => 'no-cache',
+                'X-Turbo-Stream-Chunked' => 'yes',
             ]);
 
             $response->sendHeaders();
 
             $callback($send);
+
+            echo "0" . PHP_EOL;
+            echo PHP_EOL;
         });
     }
 }

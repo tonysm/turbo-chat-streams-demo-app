@@ -1,26 +1,16 @@
 import { Controller } from "@hotwired/stimulus"
 import { renderStreamMessage } from "@hotwired/turbo"
 
-class EventStreamMessage {
+class TurboStreamChunkedMessage {
     static contentType = 'text/vnd.turbo-stream-chunked.html'
 }
 
 // Connects to data-controller="streams-turbo-streams"
 export default class extends Controller {
-    #mounted = false
+    prepareRequest({ detail: { fetchOptions: { headers } } }) {
+        if (headers.Accept.includes(TurboStreamChunkedMessage.contentType)) return
 
-    connect() {
-        this.#mounted = true
-    }
-
-    disconnect() {
-        this.#mounted = false
-    }
-
-    prepareRequest({ detail: { fetchOptions } }) {
-        if (fetchOptions.headers.Accept.includes(EventStreamMessage.contentType)) return
-
-        fetchOptions.headers.Accept = `${EventStreamMessage.contentType}, ${fetchOptions.headers.Accept}`
+        headers.Accept = `${TurboStreamChunkedMessage.contentType}, ${headers.Accept}`
     }
 
     inspectFetchResponse(event) {
@@ -35,23 +25,20 @@ export default class extends Controller {
         }
     }
 
-    async #startReceivingStreams({ response }, callback) {
+    async #startReceivingStreams(response, callback) {
         const reader = response.body.getReader()
-        let remainingResponse = ''
+        let decoder = new TextDecoder()
 
-        while (this.#mounted) {
+        while (this.element.isConnected) {
             let { done, value: chunk } = await reader.read()
 
-            let decoder = new TextDecoder()
-            let output = decoder.decode(chunk)
+            let [length, streams] = decoder.decode(chunk).split(/\r?\n/, 2)
 
-            let [streams, remaining] = extractStreamObjects(remainingResponse + output)
+            length = parseInt(length, 16)
 
-            streams.forEach(stream => {
-                callback(stream)
-            })
-
-            remainingResponse = remaining
+            if (length > 0) {
+                callback(JSON.parse(streams.slice(0, length)))
+            }
 
             if (done) break
         }
@@ -59,27 +46,11 @@ export default class extends Controller {
 }
 
 function fetchResponseFromEvent(event) {
-    return event.detail?.fetchResponse
+    return event.detail?.fetchResponse?.response
 }
 
-function fetchResponseIsEventSource(response) {
-    const contentType = response.contentType ?? ""
-
-    return contentType.startsWith(EventStreamMessage.contentType) && response.response.headers.has('X-Turbo-Stream')
-}
-
-function extractStreamObjects(raw) {
-    let PATTERN = /{"stream":true.*"endStream":true}/g
-    let matches = raw.match(PATTERN)
-    let parsed = []
-
-    if (matches) {
-        for (let i = 0; i < matches.length; i++) {
-            parsed.push(JSON.parse(matches[i]).body)
-        }
-    }
-
-    let remaining = raw.replace(PATTERN, '')
-
-    return [parsed, remaining]
+function fetchResponseIsEventSource({ headers }) {
+    return headers.get('Transfer-Encoding').includes('chunked')
+        && headers.has('X-Turbo-Stream-Chunked')
+        && headers.get('Content-Type').includes(TurboStreamChunkedMessage.contentType)
 }
