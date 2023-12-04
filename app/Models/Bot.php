@@ -9,7 +9,7 @@ class Bot
     public function reply(Message $reply, callable $callback)
     {
         $answers = [
-            'You first intercept the `turbo:before-fetch-request` and add the `text/event-stream` content type to the `Accept` header. Then we can detect that in the backend, hold the connection, and return a `text/event-stream` response, sending multiple Turbo Streams down the pipe. Then we can intercept the `turbo:before-fetch-response` and detect that it returned a `text/event-stream` response, prevent the default handling of the event, and finally start reading the response bytes and applying the streams.',
+            'You first intercept the `turbo:submit-start` event and add a custom `text/vnd.chunked-turbo-stream.html` content type to the `Accept` header. Then, we can detect that in the backend, hold the connection by returning a chunked response using the `Transfer-Encoding: chunked` header, and stream many Turbo Streams down the wire. Finally, in the frontend, we can intercept the `turbo:before-fetch-response` event, check if the response has the custom content type of `text/vnd.chunked-turbo-stream.html`, prevent the default behavior of Turbo, and start reading the chunks and render the Turbo Streams.',
             'You\'re welcome!',
         ];
 
