@@ -24,7 +24,7 @@
                 target="_top"
                 data-controller="streams-turbo-streams"
                 data-action="
-                    turbo:before-fetch-request->streams-turbo-streams#prepareRequest
+                    turbo:submit-start->streams-turbo-streams#prepareRequest
                     turbo:before-fetch-response->streams-turbo-streams#inspectFetchResponse
                 "
             >

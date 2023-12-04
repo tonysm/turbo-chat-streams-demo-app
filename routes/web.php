@@ -65,28 +65,16 @@ Route::middleware('auth')->group(function () {
             'content' => '',
         ]);
 
-        if (request()->wantsTurboStreamEventStream()) {
-            return response()->turboStreamsEventStream(function ($send) use ($bot, $chat, $message, $reply) {
-                $send((string) turbo_stream([
-                    turbo_stream()
-                        ->action('append')
-                        ->target(dom_id($chat, 'messages'))
-                        ->view('messages.partials.message', ['message' => $message]),
-                    turbo_stream()
-                        ->action('append')
-                        ->target(dom_id($reply->chat, 'messages'))
-                        ->view('messages.partials.message', ['message' => $reply]),
-                    turbo_stream()
-                        ->action('update')
-                        ->target(dom_id($message->chat, 'create_message'))
-                        ->view('chat-messages.partials.message-form', ['chat' => $message->chat]),
+        if (request()->wantsTurboStreamChunks()) {
+            return response()->turboStreamsChunks(function ($stream) use ($bot, $chat, $message, $reply) {
+                $stream((string) turbo_stream([
+                    turbo_stream()->append(dom_id($chat, 'messages'))->view('messages.partials.message', ['message' => $message]),
+                    turbo_stream()->append(dom_id($chat, 'messages'))->view('messages.partials.message', ['message' => $reply]),
+                    turbo_stream()->update(dom_id($chat, 'create_message'), view('chat-messages.partials.message-form', ['chat' => $chat])),
                 ]));
 
-                $bot->reply($reply, function ($reply) use ($send) {
-                    $send((string) turbo_stream()
-                        ->action('replace')
-                        ->target(dom_id($reply))
-                        ->view('messages.partials.message', ['message' => $reply]));
+                $bot->reply($reply, function ($reply) use ($stream) {
+                    $stream((string) turbo_stream()->replace($reply)->view('messages.partials.message', ['message' => $reply]));
                 });
             });
         }

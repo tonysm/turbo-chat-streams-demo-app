@@ -2,12 +2,12 @@ import { Controller } from "@hotwired/stimulus"
 import { renderStreamMessage } from "@hotwired/turbo"
 
 class TurboStreamChunkedMessage {
-    static contentType = 'text/vnd.turbo-stream-chunked.html'
+    static contentType = 'text/vnd.chunked-turbo-stream.html'
 }
 
 // Connects to data-controller="streams-turbo-streams"
 export default class extends Controller {
-    prepareRequest({ detail: { fetchOptions: { headers } } }) {
+    prepareRequest({ detail: { formSubmission: { fetchRequest: { fetchOptions: { headers }}}}}) {
         if (headers.Accept.includes(TurboStreamChunkedMessage.contentType)) return
 
         headers.Accept = `${TurboStreamChunkedMessage.contentType}, ${headers.Accept}`
@@ -19,28 +19,34 @@ export default class extends Controller {
         if (response && fetchResponseIsEventSource(response)) {
             event.preventDefault()
 
-            this.#startReceivingStreams(response, (stream) => {
+            this.#startReceivingChunks(response, (stream) => {
                 renderStreamMessage(stream)
             })
         }
     }
 
-    async #startReceivingStreams(response, callback) {
+    async #startReceivingChunks(response, callback) {
         const reader = response.body.getReader()
-        let decoder = new TextDecoder()
+        const decoder = new TextDecoder('utf-8')
 
-        while (this.element.isConnected) {
-            let { done, value: chunk } = await reader.read()
+        try {
+            while (this.element.isConnected) {
+                let { done, value: chunk } = await reader.read()
 
-            let [length, streams] = decoder.decode(chunk).split(/\r?\n/, 2)
+                let [hex, streams] = decoder.decode(chunk).split(/\r?\n/, 2)
 
-            length = parseInt(length, 16)
+                let length = parseInt(hex, 16)
 
-            if (length > 0) {
-                callback(JSON.parse(streams.slice(0, length)))
+                if (length > 0) {
+                    callback(JSON.parse(streams.substring(0, length)))
+                }
+
+                if (done) break
             }
-
-            if (done) break
+        } catch (error) {
+            console.error('Error processing chunks:', error)
+        } finally {
+            reader.releaseLock()
         }
     }
 }
