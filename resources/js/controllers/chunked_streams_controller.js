@@ -5,7 +5,7 @@ class TurboStreamChunkedMessage {
     static contentType = 'text/vnd.chunked-turbo-stream.html'
 }
 
-// Connects to data-controller="streams-turbo-streams"
+// Connects to data-controller="chunked-streams"
 export default class extends Controller {
     prepareRequest({ detail: { formSubmission: { fetchRequest: { fetchOptions: { headers }}}}}) {
         if (headers.Accept.includes(TurboStreamChunkedMessage.contentType)) return
