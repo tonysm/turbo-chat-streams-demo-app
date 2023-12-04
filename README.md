@@ -1,4 +1,4 @@
-Demo Application for the chunked Turbo Streams blogpost.
+Demo Application for the Chunked Turbo Streams blogpost.
 
 ### Running
 
