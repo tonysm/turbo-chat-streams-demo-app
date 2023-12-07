@@ -9,8 +9,8 @@ services:
         environment:
             LARAVEL_SAIL: 1
             SSL_MODE: 'off'
-            PUID: 1000
-            PGID: 1000
+            PUID: '${UID:-1000}'
+            PGID: '${GID:-1000}'
         volumes:
             - '.:/var/www/html'
         networks:
