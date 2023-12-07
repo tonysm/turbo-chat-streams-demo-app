@@ -11,10 +11,8 @@
 
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div id="@domid($chat, 'messages')" class="space-y-2">
-                @foreach ($chat->messages as $message)
-                    @include('messages.partials.message', ['message' => $message])
-                @endforeach
+            <div data-controller="auto-animate" id="@domid($chat, 'messages')" class="space-y-2">
+                @each('messages.partials.message', $chat->messages, 'message')
             </div>
 
             <x-turbo-frame

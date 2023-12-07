@@ -74,7 +74,7 @@ Route::middleware('auth')->group(function () {
                 ]));
 
                 $bot->reply($reply, function ($reply) use ($stream) {
-                    $stream((string) turbo_stream()->replace($reply)->view('messages.partials.message', ['message' => $reply]));
+                    $stream((string) turbo_stream()->action('morph')->target($reply)->view('messages.partials.message', ['message' => $reply]));
                 });
             });
         }

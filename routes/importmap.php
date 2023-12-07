@@ -13,3 +13,4 @@ Importmap::pin("el-transition", to: "https://ga.jspm.io/npm:el-transition@0.0.7/
 Importmap::pin("#lib/adapters/http.js", to: "https://ga.jspm.io/npm:axios@0.27.2/lib/adapters/xhr.js");
 Importmap::pin("#lib/defaults/env/FormData.js", to: "https://ga.jspm.io/npm:axios@0.27.2/lib/helpers/null.js");
 Importmap::pin("buffer", to: "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/buffer.js");
+Importmap::pin("@formkit/auto-animate", to: "https://ga.jspm.io/npm:@formkit/auto-animate@0.8.1/index.mjs");
