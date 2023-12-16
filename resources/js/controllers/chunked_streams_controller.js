@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { renderStreamMessage } from "@hotwired/turbo"
+import { v4 as uuid } from "uuid"
 
 class TurboStreamChunkedMessage {
     static contentType = 'text/vnd.chunked-turbo-stream.html'
@@ -7,16 +8,28 @@ class TurboStreamChunkedMessage {
 
 // Connects to data-controller="chunked-streams"
 export default class extends Controller {
-    prepareRequest({ detail: { formSubmission: { fetchRequest: { fetchOptions: { headers }}}}}) {
-        if (headers.Accept.includes(TurboStreamChunkedMessage.contentType)) return
+    #requests = []
 
-        headers.Accept = `${TurboStreamChunkedMessage.contentType}, ${headers.Accept}`
+    disconnect() {
+        let request;
+
+        while (request = this.#requests.pop()) {
+            request.cancel()
+        }
+    }
+
+    prepareRequest({ detail: { formSubmission: { fetchRequest } } }) {
+        if (fetchRequest.fetchOptions.headers.Accept.includes(TurboStreamChunkedMessage.contentType)) return
+
+        fetchRequest.fetchOptions.headers.Accept = `${TurboStreamChunkedMessage.contentType}, ${fetchRequest.fetchOptions.headers.Accept}`
+        fetchRequest.fetchOptions.headers['X-Turbo-Stream-Chunk-Id'] = uuid()
+        this.#requests.push(fetchRequest)
     }
 
     inspectFetchResponse(event) {
         const response = fetchResponseFromEvent(event)
 
-        if (response && fetchResponseIsEventSource(response)) {
+        if (response && fetchResponseIsChunkedTurboStreams(response)) {
             event.preventDefault()
 
             this.#startReceivingChunks(response, (stream) => {
@@ -33,21 +46,30 @@ export default class extends Controller {
             while (this.element.isConnected) {
                 let { done, value: chunk } = await reader.read()
 
-                let [hex, streams] = decoder.decode(chunk).split(/\r?\n/, 2)
+                let streams = decoder.decode(chunk)
 
-                let length = parseInt(hex, 16)
-
-                if (length > 0) {
-                    callback(JSON.parse(streams.substring(0, length)))
+                try {
+                    streams && callback(JSON.parse(streams))
+                } catch (error) {
+                    console.log(streams)
+                    // Do nothing...
                 }
 
                 if (done) break
             }
+
+            this.#removeFinishedRequest(response.headers.get('X-Turbo-Stream-Chunk-Id'))
         } catch (error) {
-            console.error('Error processing chunks:', error)
+            if (error?.name != "AbortError") {
+                console.error('Error processing chunks', error)
+            }
         } finally {
             reader.releaseLock()
         }
+    }
+
+    #removeFinishedRequest(requestId) {
+        this.#requests = this.#requests.filter(req => req.fetchOptions.headers['X-Turbo-Stream-Chunk-Id'] != requestId)
     }
 }
 
@@ -55,8 +77,6 @@ function fetchResponseFromEvent(event) {
     return event.detail?.fetchResponse?.response
 }
 
-function fetchResponseIsEventSource({ headers }) {
-    return headers.get('Transfer-Encoding').includes('chunked')
-        && headers.has('X-Turbo-Stream-Chunked')
-        && headers.get('Content-Type').includes(TurboStreamChunkedMessage.contentType)
+function fetchResponseIsChunkedTurboStreams({ headers }) {
+    return headers.get('Content-Type').includes(TurboStreamChunkedMessage.contentType)
 }

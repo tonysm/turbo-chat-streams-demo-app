@@ -16,7 +16,7 @@ class Bot
         $answer = explode(' ', $answers[count($reply->chat->messages) == 2 ? 0 : 1]);
 
         foreach ($answer as $word) {
-            Sleep::for(rand(100, 200))->milliseconds();
+            Sleep::for(rand(100, 300))->milliseconds();
 
             $reply->update([
                 'content' => $reply->content . ' ' . $word,

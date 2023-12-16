@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,11 +31,7 @@ class AppServiceProvider extends ServiceProvider
                 $stream = function (string $chunk) {
                     if (connection_aborted()) return;
 
-                    // Making sure this is all in one line...
-                    $chunk = json_encode($chunk);
-
-                    echo dechex(strlen($chunk)) . PHP_EOL;
-                    echo $chunk . PHP_EOL;
+                    echo json_encode($chunk) . PHP_EOL;
 
                     if (ob_get_level() > 0) {
                         ob_flush();
@@ -44,14 +41,11 @@ class AppServiceProvider extends ServiceProvider
                 };
 
                 $callback($stream);
-
-                echo "0" . PHP_EOL . PHP_EOL;
             }, 200, [
                 'Content-Type' => 'text/vnd.chunked-turbo-stream.html',
-                'Transfer-Encoding' => 'chunked',
-                'X-Accel-Buffering' => 'no',
                 'Cache-Control' => 'no-cache',
-                'X-Turbo-Stream-Chunked' => 'yes',
+                'X-Accel-Buffering' => 'no',
+                'X-Turbo-Stream-Chunk-Id'  => request()->header('X-Turbo-Stream-Chunk-Id', (string) Str::uuid()),
             ]);
         });
     }
