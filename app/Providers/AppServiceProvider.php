@@ -45,7 +45,6 @@ class AppServiceProvider extends ServiceProvider
                 'Content-Type' => 'text/vnd.chunked-turbo-stream.html',
                 'Cache-Control' => 'no-cache',
                 'X-Accel-Buffering' => 'no',
-                'X-Turbo-Stream-Chunk-Id'  => request()->header('X-Turbo-Stream-Chunk-Id', (string) Str::uuid()),
             ]);
         });
     }

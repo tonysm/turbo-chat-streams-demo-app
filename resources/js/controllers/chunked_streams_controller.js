@@ -1,6 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 import { renderStreamMessage } from "@hotwired/turbo"
-import { v4 as uuid } from "uuid"
 
 class TurboStreamChunkedMessage {
     static contentType = 'text/vnd.chunked-turbo-stream.html'
@@ -22,7 +21,6 @@ export default class extends Controller {
         if (fetchRequest.fetchOptions.headers.Accept.includes(TurboStreamChunkedMessage.contentType)) return
 
         fetchRequest.fetchOptions.headers.Accept = `${TurboStreamChunkedMessage.contentType}, ${fetchRequest.fetchOptions.headers.Accept}`
-        fetchRequest.fetchOptions.headers['X-Turbo-Stream-Chunk-Id'] = uuid()
         this.#requests.push(fetchRequest)
     }
 
@@ -46,19 +44,12 @@ export default class extends Controller {
             while (this.element.isConnected) {
                 let { done, value: chunk } = await reader.read()
 
-                let streams = decoder.decode(chunk)
+                let streams = decoder.decode(chunk).trim()
 
-                try {
-                    streams && callback(JSON.parse(streams))
-                } catch (error) {
-                    console.log(streams)
-                    // Do nothing...
-                }
+                streams && callback(JSON.parse(streams))
 
                 if (done) break
             }
-
-            this.#removeFinishedRequest(response.headers.get('X-Turbo-Stream-Chunk-Id'))
         } catch (error) {
             if (error?.name != "AbortError") {
                 console.error('Error processing chunks', error)
@@ -66,10 +57,6 @@ export default class extends Controller {
         } finally {
             reader.releaseLock()
         }
-    }
-
-    #removeFinishedRequest(requestId) {
-        this.#requests = this.#requests.filter(req => req.fetchOptions.headers['X-Turbo-Stream-Chunk-Id'] != requestId)
     }
 }
 
