@@ -14,3 +14,4 @@ Importmap::pin("#lib/adapters/http.js", to: "https://ga.jspm.io/npm:axios@0.27.2
 Importmap::pin("#lib/defaults/env/FormData.js", to: "https://ga.jspm.io/npm:axios@0.27.2/lib/helpers/null.js");
 Importmap::pin("buffer", to: "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/buffer.js");
 Importmap::pin("@formkit/auto-animate", to: "https://ga.jspm.io/npm:@formkit/auto-animate@0.8.1/index.mjs");
+Importmap::pin("current.js", to: "https://ga.jspm.io/npm:current.js@0.2.0/dist/current.js");

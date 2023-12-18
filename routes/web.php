@@ -55,26 +55,20 @@ Route::middleware('auth')->group(function () {
     })->name('chats.messages.create');
 
     Route::post('/chats/{chat}/messages', function (Chat $chat, Bot $bot) {
-        $message = $chat->messages()->create(request()->validate([
+        [$message, $reply] = $chat->createMessageWithReply(request()->validate([
             'content' => ['required'],
-        ]) + [
-            'completed_at' => now(),
-        ]);
-
-        $reply = $chat->messages()->create([
-            'content' => '',
-        ]);
+        ]));
 
         if (request()->wantsTurboStreamChunks()) {
-            return response()->turboStreamsChunks(function ($stream) use ($bot, $chat, $message, $reply) {
+            return response()->turboStreamsChunks(function ($stream) use ($chat, $message, $reply, $bot) {
                 $stream((string) turbo_stream([
-                    turbo_stream()->append(dom_id($chat, 'messages'))->view('messages.partials.message', ['message' => $message]),
-                    turbo_stream()->append(dom_id($chat, 'messages'))->view('messages.partials.message', ['message' => $reply]),
+                    turbo_stream()->append(dom_id($chat, 'entries'))->view('entries._entry', ['entry' => $message]),
+                    turbo_stream()->append(dom_id($chat, 'entries'))->view('entries._entry', ['entry' => $reply]),
                     turbo_stream()->update(dom_id($chat, 'create_message'), view('chat-messages.partials.message-form', ['chat' => $chat])),
                 ]));
 
-                $bot->reply($reply, function ($reply) use ($stream) {
-                    $stream((string) turbo_stream()->action('morph')->target($reply)->view('messages.partials.message', ['message' => $reply]));
+                $reply->generate($bot, function ($reply) use ($stream) {
+                    $stream((string) turbo_stream()->target(dom_id($reply))->action('morph')->view('entries._entry', ['entry' => $reply]));
                 });
             });
         }

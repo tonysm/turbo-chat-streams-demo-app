@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Entry;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -8,15 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Message extends Model
 {
     use HasFactory;
+    use Entryable;
 
     protected $guarded = [];
-
-    protected $casts = [
-        'completed_at' => 'datetime',
-    ];
-
-    public function chat()
-    {
-        return $this->belongsTo(Chat::class);
-    }
 }

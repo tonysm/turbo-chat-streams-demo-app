@@ -9,10 +9,12 @@
         </h2>
     </x-slot>
 
+    <x-turbo-stream-from :source="$chat" />
+
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div data-controller="auto-animate" id="@domid($chat, 'messages')" class="space-y-2">
-                @each('messages.partials.message', $chat->messages, 'message')
+            <div data-controller="auto-animate" id="@domid($chat, 'entries')" class="space-y-2">
+                @each('entries._entry', $chat->entries, 'entry')
             </div>
 
             <x-turbo-frame
