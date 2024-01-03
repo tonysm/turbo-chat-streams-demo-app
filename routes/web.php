@@ -59,8 +59,8 @@ Route::middleware('auth')->group(function () {
             'content' => ['required'],
         ]));
 
-        if (request()->wantsTurboStreamChunks()) {
-            return response()->turboStreamsChunks(function ($stream) use ($chat, $message, $reply, $bot) {
+        if (request()->wantsStreamedTurboStreams()) {
+            return response()->streamTurboStreams(function ($stream) use ($chat, $message, $reply, $bot) {
                 $stream((string) turbo_stream([
                     turbo_stream()->append(dom_id($chat, 'entries'))->view('entries._entry', ['entry' => $message]),
                     turbo_stream()->append(dom_id($chat, 'entries'))->view('entries._entry', ['entry' => $reply]),

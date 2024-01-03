@@ -5,7 +5,6 @@ namespace App\Providers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,11 +21,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Request::macro('wantsTurboStreamChunks', function () {
-            return str_contains($this->header('Accept', ''), 'text/vnd.chunked-turbo-stream.html');
+        Request::macro('wantsStreamedTurboStreams', function () {
+            return str_contains($this->header('Accept', ''), 'text/vnd.streamed-turbo-stream.html');
         });
 
-        Response::macro('turboStreamsChunks', function ($callback) {
+        Response::macro('streamTurboStreams', function ($callback) {
             return response()->stream(function () use ($callback) {
                 $stream = function (string $chunk) {
                     if (connection_aborted()) return;
@@ -42,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
 
                 $callback($stream);
             }, 200, [
-                'Content-Type' => 'text/vnd.chunked-turbo-stream.html',
+                'Content-Type' => 'text/vnd.streamed-turbo-stream.html',
                 'Cache-Control' => 'no-cache',
                 'X-Accel-Buffering' => 'no',
             ]);

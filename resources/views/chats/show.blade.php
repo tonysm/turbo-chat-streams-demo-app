@@ -22,10 +22,10 @@
                 :id="[$chat, 'create_message']"
                 :src="route('chats.messages.create', $chat)"
                 target="_top"
-                data-controller="chunked-streams"
+                data-controller="streamed-responses"
                 data-action="
-                    turbo:submit-start->chunked-streams#prepareRequest
-                    turbo:before-fetch-response->chunked-streams#inspectFetchResponse
+                    turbo:submit-start->streamed-responses#prepareRequest
+                    turbo:before-fetch-response->streamed-responses#inspectFetchResponse
                 "
             >
                 <a href="{{ route('chats.messages.create', $chat)}}" class="dark:text-gray-200">New Message</a>
