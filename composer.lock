@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b65ed9fca040ae7a7947641f6abcf3f6",
+    "content-hash": "c737230d14890d7b2d5559fa11614543",
     "packages": [
         {
             "name": "brick/math",
@@ -1104,16 +1104,16 @@
         },
         {
             "name": "hotwired-laravel/turbo-laravel",
-            "version": "2.0.0-beta1",
+            "version": "2.0.0-beta2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hotwired-laravel/turbo-laravel.git",
-                "reference": "333457953040b177ebe5a078b16cc53015d66375"
+                "reference": "42082d6d6a818ae61448f9598ef9953793e01482"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hotwired-laravel/turbo-laravel/zipball/333457953040b177ebe5a078b16cc53015d66375",
-                "reference": "333457953040b177ebe5a078b16cc53015d66375",
+                "url": "https://api.github.com/repos/hotwired-laravel/turbo-laravel/zipball/42082d6d6a818ae61448f9598ef9953793e01482",
+                "reference": "42082d6d6a818ae61448f9598ef9953793e01482",
                 "shasum": ""
             },
             "require": {
@@ -1169,9 +1169,9 @@
             ],
             "support": {
                 "issues": "https://github.com/hotwired-laravel/turbo-laravel/issues",
-                "source": "https://github.com/hotwired-laravel/turbo-laravel/tree/2.0.0-beta1"
+                "source": "https://github.com/hotwired-laravel/turbo-laravel/tree/2.0.0-beta2"
             },
-            "time": "2023-11-27T01:50:24+00:00"
+            "time": "2023-12-27T18:54:44+00:00"
         },
         {
             "name": "laravel/framework",

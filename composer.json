@@ -9,7 +9,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "hotwired-laravel/stimulus-laravel": "^1.0.0-beta3",
         "hotwired-laravel/turbo-breeze": "^1.0.0-beta4",
-        "hotwired-laravel/turbo-laravel": "^2.0.0-beta1",
+        "hotwired-laravel/turbo-laravel": "^2.0.0-beta2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
