@@ -14,9 +14,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Entry extends Model
 {
-    use HasFactory;
     use AutoReplies;
     use Broadcasts;
+    use HasFactory;
 
     protected $guarded = [];
 

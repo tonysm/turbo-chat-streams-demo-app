@@ -28,7 +28,7 @@ trait AutoReplies
         GenerateReply::dispatch($this);
     }
 
-    public function generate(Bot $bot, callable $callback = null): void
+    public function generate(Bot $bot, ?callable $callback = null): void
     {
         $bot->reply($this, $callback);
     }

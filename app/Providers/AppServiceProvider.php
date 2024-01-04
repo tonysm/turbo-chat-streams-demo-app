@@ -28,9 +28,11 @@ class AppServiceProvider extends ServiceProvider
         Response::macro('streamTurboStreams', function ($callback) {
             return response()->stream(function () use ($callback) {
                 $stream = function (string $chunk) {
-                    if (connection_aborted()) return;
+                    if (connection_aborted()) {
+                        return;
+                    }
 
-                    echo json_encode($chunk) . PHP_EOL;
+                    echo json_encode($chunk).PHP_EOL;
 
                     if (ob_get_level() > 0) {
                         ob_flush();

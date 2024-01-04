@@ -5,8 +5,6 @@ use App\Http\Controllers\ProfilePasswordController;
 use App\Models\Bot;
 use App\Models\Chat;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Sleep;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 use function HotwiredLaravel\TurboLaravel\dom_id;
 
@@ -49,9 +47,9 @@ Route::middleware('auth')->group(function () {
     })->name('chats.show');
 
     Route::get('/chats/{chat}/messages/create', function (Chat $chat) {
-       return view('chat-messages.create', [
+        return view('chat-messages.create', [
             'chat' => $chat,
-       ]);
+        ]);
     })->name('chats.messages.create');
 
     Route::post('/chats/{chat}/messages', function (Chat $chat, Bot $bot) {
