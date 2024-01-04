@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="head">
-        <x-turbo-refreshes-with method="morph" scroll="preserve" />
+        <x-turbo::refreshes-with method="morph" scroll="preserve" />
     </x-slot>
 
     <x-slot name="header">
@@ -9,7 +9,7 @@
         </h2>
     </x-slot>
 
-    <x-turbo-stream-from :source="$chat" />
+    <x-turbo::stream-from :source="$chat" />
 
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
@@ -17,7 +17,7 @@
                 @each('entries._entry', $chat->entries, 'entry')
             </div>
 
-            <x-turbo-frame
+            <x-turbo::frame
                 data-turbo-permanent
                 :id="[$chat, 'create_message']"
                 :src="route('chats.messages.create', $chat)"
@@ -29,7 +29,7 @@
                 "
             >
                 <a href="{{ route('chats.messages.create', $chat)}}" class="dark:text-gray-200">New Message</a>
-            </x-turbo-frame>
+            </x-turbo::frame>
         </div>
     </div>
 </x-app-layout>

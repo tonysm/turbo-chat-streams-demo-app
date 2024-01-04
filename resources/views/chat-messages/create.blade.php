@@ -20,9 +20,9 @@
                             </p>
                         </header>
 
-                        <x-turbo-frame :id="[$chat, 'create_message']" target="_top">
+                        <x-turbo::frame :id="[$chat, 'create_message']" target="_top">
                             @include('chat-messages.partials.message-form', ['chat' => $chat])
-                        </x-turbo-frame>
+                        </x-turbo::frame>
                     </section>
                 </div>
             </div>
